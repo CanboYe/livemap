@@ -1,0 +1,6 @@
+data/
+data*
+build/
+build*
+devel/
+*.bag

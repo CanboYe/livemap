@@ -1,0 +1,8 @@
+build/
+logs/
+images/
+videos/
+config/
+.vscode/
+nodejs/node_modules
+testRun1_11_29_18/
