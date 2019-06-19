@@ -1,5 +1,17 @@
 # LiveMap
 
+If you find this useful, please cite the related paper:
+```
+@inproceedings{christensen2019towards,
+  title={Towards a Distraction-free Waze},
+  author={Christensen, Kevin and Mertz, Christoph and Pillai, Padmanabhan and Hebert, Martial and Satyanarayanan, Mahadev},
+  booktitle={Proceedings of the 20th International Workshop on Mobile Computing Systems and Applications},
+  pages={15--20},
+  year={2019},
+  organization={ACM}
+}
+```
+
 ## Zone Cloudlet
 
 ### Installation and Running
