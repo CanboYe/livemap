@@ -180,6 +180,7 @@ void detectionCallback::message_arrived(mqtt::const_message_ptr msg)
         int qos = 1;
         pubmsg->set_qos(qos);
         cli_.publish(pubmsg);//->wait_for(TIMEOUT);
+        std::cout << "Sent a New Detection Message++++" << std::endl << std::endl;
     }
     else
     {
@@ -220,7 +221,11 @@ void detectionCallback::message_arrived(mqtt::const_message_ptr msg)
     //std::cout << "\tpayload: '" << msg->to_string() << "'\n" << std::endl;
 }
 
-void detectionCallback::delivery_complete(mqtt::delivery_token_ptr token) {}
+void detectionCallback::delivery_complete(mqtt::delivery_token_ptr token) 
+{
+    std::cout << "\tDelivery complete for token: "
+    << (token ? token->get_message_id() : -1) << std::endl<< std::endl;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 

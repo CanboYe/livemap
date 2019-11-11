@@ -63,7 +63,7 @@ int Cloudlet::insertHazard(DetectionMessage &msg)
         W.exec(sqlInsert);
         W.commit();
         // std::cout << "Records created successfully" << std::endl;
-        std::cout << "New hazard records created successfully" << std::endl<< std::endl;
+        std::cout << "New hazard records created successfully" << std::endl;
         C.disconnect();
     }
     catch (const std::exception &e)
