@@ -14,7 +14,7 @@ DetectionMessage makeSampleDetectionJSON()
     double r1 = (double) (rand()%100) - 50;
     double r2 = (double) (rand()%100) - 50;
 
-    Mat image = imread("../images/frame417yellow.jpg");
+    Mat image = imread("../images/test.jpg");
     if (!image.isContinuous())
         image = image.clone();
     std::vector<uchar> buf;
@@ -244,7 +244,7 @@ int main()
     Logger log;
     Cloudlet cloud;
     std::string userName = "osm";
-    std::string dbName = "testCreation";
+    std::string dbName = "testdb";
     srand (time(NULL));
 
 

@@ -38,6 +38,10 @@ class Cloudlet
     // to display
     int createNotify(); 
     int insertDrive(DrivingCompleteMessage &msg);
+    int selectHazard(DetectionMessage &msg);
+    double get_dLat(double lat1, double lon1, double distance);
+    double get_dLon(double lat1, double lon1, double distance);
+    double measureDistance(double lat1, double lon1, double lat2, double lon2);
 
   private:
   // Queue for Detection Messages

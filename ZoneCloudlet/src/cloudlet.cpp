@@ -32,7 +32,7 @@ int Cloudlet::insertHazard(DetectionMessage &msg)
 
         if (C.is_open())
         {
-            std::cout << "Opened database successfully: " << C.dbname() << std::endl;
+            // std::cout << "Opened database successfully: " << C.dbname() << std::endl;
         }
         else
         {
@@ -62,7 +62,8 @@ int Cloudlet::insertHazard(DetectionMessage &msg)
         /* Execute SQL query */
         W.exec(sqlInsert);
         W.commit();
-        std::cout << "Records created successfully" << std::endl;
+        // std::cout << "Records created successfully" << std::endl;
+        std::cout << "New hazard records created successfully" << std::endl<< std::endl;
         C.disconnect();
     }
     catch (const std::exception &e)
@@ -72,6 +73,94 @@ int Cloudlet::insertHazard(DetectionMessage &msg)
     }
     m_numInsertions++;
     return 1;
+}
+
+int Cloudlet::selectHazard(DetectionMessage &msg)
+{
+    // std::cout << "selecting hazards " << std::endl;
+    std::string sqlSelect;
+    try
+    {
+        pqxx::connection C(m_HazardDB.dbCommand_);
+
+        if (C.is_open())
+        {
+            // std::cout << "#######Opened database successfully: " << C.dbname() << std::endl;
+        }
+        else
+        {
+            std::cout << "Can't open database" << std::endl;
+            return 1;
+        }
+        double distance = 1;//meter
+        double dLat = this->get_dLat(msg.Latitude_, msg.Longitude_, distance);
+        double dLon = this->get_dLon(msg.Latitude_, msg.Longitude_, distance);
+        double dist_jud1 = this-> measureDistance( msg.Latitude_,  msg.Longitude_, msg.Latitude_ - abs(dLat), msg.Longitude_);
+        double dist_jud2 = this-> measureDistance( msg.Latitude_,  msg.Longitude_, msg.Latitude_, msg.Longitude_ - abs(dLon));
+        // std::cout << std::endl << "#### dLat =  " <<  dLat << ",  dLon =  " <<  dLon << ", dist = " << dist_jud1 << ", dist = " << dist_jud2 << std::endl;
+        
+        sqlSelect = "SELECT count(*) FROM hazards WHERE"\
+                    " latitude BETWEEN " + Utils::to_string_precision(msg.Latitude_ - abs(dLat)) + " AND " + Utils::to_string_precision(msg.Latitude_ + abs(dLat)) +
+                    " AND longitude BETWEEN " + Utils::to_string_precision(msg.Longitude_ - abs(dLon)) + " AND " + Utils::to_string_precision(msg.Longitude_ + abs(dLon));
+        std::cout << sqlSelect << std::endl;
+        pqxx::nontransaction N(C);
+
+        pqxx::result R(N.exec(sqlSelect));
+        // for (pqxx::result::const_iterator c = R.begin(); c != R.end(); ++c) 
+        // {
+        std::cout << "#### The select result is " <<  R[0][0].as<int>() << std::endl;
+        // }
+
+        
+        if (R[0][0].as<int>() != 0)
+        {
+            C.disconnect();
+            return 1;//exist
+        } 
+        else
+        {
+            C.disconnect();
+            return 0;
+        }
+        return 0;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
+    m_numInsertions++;
+    return 1;
+
+}
+
+double Cloudlet::get_dLat(double lat1, double lon1, double distance)
+{
+    double R = 6378.137; // Radius of earth in KM
+    distance = distance / 1000;
+    double dlat = (distance / R) * 180 / M_PI;
+    return dlat;
+}
+
+double Cloudlet::get_dLon(double lat1, double lon1, double distance)
+{
+    double R = 6378.137; // Radius of earth in KM
+    distance = distance / 1000;
+    double dlon = 2 * asin( sin(distance/(2*R)) / cos(lat1) );
+    dlon = dlon * 180 / M_PI;
+    return dlon;
+}
+
+
+double Cloudlet::measureDistance(double lat1, double lon1, double lat2, double lon2)
+{
+    double R = 6378.137; // Radius of earth in KM
+    double dLat = lat2 * M_PI / 180.0 - lat1 * M_PI / 180.0;
+    double dLon = lon2 * M_PI / 180.0 - lon1 *M_PI / 180.0;
+    double a = sin(dLat/2.0) * sin(dLat/2.0) + cos(lat1 *M_PI / 180.0) * cos(lat2 * M_PI / 180.0) * sin(dLon/2.0) * sin(dLon/2.0);
+    double c = 2.0 * atan2(sqrt(a), sqrt(1.0-a));
+    double d = R * c;
+    return d * 1000.0; // meters
 }
 
 int Cloudlet::createDatabase(const std::string dbName, const std::string userName)
@@ -307,7 +396,7 @@ int Cloudlet::insertDrive(DrivingCompleteMessage &msg)
 
         if (C.is_open())
         {
-            std::cout << "Opened database successfully: " << C.dbname() << std::endl;
+            // std::cout << "Opened database successfully: " << C.dbname() << std::endl;
         }
         else
         {
@@ -331,7 +420,8 @@ int Cloudlet::insertDrive(DrivingCompleteMessage &msg)
         /* Execute SQL query */
         W.exec(sqlInsert);
         W.commit();
-        std::cout << "Records created successfully" << std::endl;
+        // std::cout << "Records created successfully" << std::endl;
+        std::cout << "Inserted a GPS record" << std::endl<< std::endl;
         C.disconnect();
     }
     catch (const std::exception &e)
