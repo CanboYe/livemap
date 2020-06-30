@@ -244,7 +244,7 @@ int main()
     Logger log;
     Cloudlet cloud;
     std::string userName = "osm";
-    std::string dbName = "testCreation";
+    std::string dbName = "testdb";
     srand (time(NULL));
 
 

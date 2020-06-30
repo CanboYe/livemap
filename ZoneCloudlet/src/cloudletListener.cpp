@@ -166,8 +166,27 @@ void detectionCallback::message_arrived(mqtt::const_message_ptr msg)
 
     //saveImage and insert the hazard
     m_cloudlet->saveImage(img);
-    m_cloudlet->insertHazard(dmessage);
 
+    //determine if the hazard is new
+    if (!m_cloudlet->selectHazard(dmessage))
+    {
+        m_cloudlet->insertHazard(dmessage);
+
+        // publish a message to vehicle cloudlet
+        std::string message; 
+        std::string NEW_HAZARD_TOPIC("NEW_HAZARDS_DETECTED");
+        Utils::makeDetectionJSON(message,dmessage);
+        mqtt::message_ptr pubmsg = mqtt::make_message(NEW_HAZARD_TOPIC, message);
+        int qos = 1;
+        pubmsg->set_qos(qos);
+        cli_.publish(pubmsg);//->wait_for(TIMEOUT);
+        std::cout << "Sent a New Detection Message++++" << std::endl << std::endl;
+    }
+    else
+    {
+        std::cout << "****duplicated detection messages" << std::endl<< std::endl;
+    }
+    
 
 
     // TODO: Add msg to msg queue
@@ -202,7 +221,11 @@ void detectionCallback::message_arrived(mqtt::const_message_ptr msg)
     //std::cout << "\tpayload: '" << msg->to_string() << "'\n" << std::endl;
 }
 
-void detectionCallback::delivery_complete(mqtt::delivery_token_ptr token) {}
+void detectionCallback::delivery_complete(mqtt::delivery_token_ptr token) 
+{
+    std::cout << "\tDelivery complete for token: "
+    << (token ? token->get_message_id() : -1) << std::endl<< std::endl;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -259,7 +282,7 @@ void driveCompleteCallback::connection_lost(const std::string &cause)
 void driveCompleteCallback::message_arrived(mqtt::const_message_ptr msg)
 {
 
-    std::cout << "Drive GPS Message arrived" << std::endl;
+    // std::cout << "Drive GPS Message arrived" << std::endl;
     std::string detectionJSON(msg->get_payload_str().begin(),
                                msg->get_payload_str().end());
     DrivingCompleteMessage dmessage;

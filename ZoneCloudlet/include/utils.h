@@ -1,5 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
+
+#define RAPIDJSON_HAS_STDSTRING 1
+
 #include <opencv2/opencv.hpp>
 #include <cstring>
 #include <sstream>

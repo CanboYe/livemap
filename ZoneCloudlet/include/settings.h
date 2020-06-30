@@ -32,7 +32,7 @@
                         AS $$\n \
                         BEGIN\n \
                             PERFORM pg_notify('addrecord', json_build_object('table', TG_TABLE_NAME, 'hazard_id', NEW.hazard_id, \
-                            'latitude', NEW.latitude, 'longitude', NEW.longitude, 'image', NEW.image, 'active', NEW.active, 'virtual', NEW.virtual)::text);\n \
+                            'type', NEW.type, 'latitude', NEW.latitude, 'longitude', NEW.longitude, 'image', NEW.image)::text);\n \
                             RETURN NULL;\n \
                         END;\n \
                         $$;"
